@@ -18,10 +18,10 @@ enum InvitationState: Int {
 }
 
 class ZegoInvitationUser: NSObject {
-    var user: ZegoUIkitUser?
+    var user: ZegoUIKitUser?
     var state: InvitationState = .error
     
-    init(_ user: ZegoUIkitUser, state: InvitationState) {
+    init(_ user: ZegoUIKitUser, state: InvitationState) {
         super.init()
         self.user = user
         self.state = state
@@ -30,12 +30,12 @@ class ZegoInvitationUser: NSObject {
 
 class InvitationData: NSObject {
     var invitationID: String?
-    var inviter: ZegoUIkitUser?
+    var inviter: ZegoUIKitUser?
     var invitees: [ZegoInvitationUser]?
-    var type: ZegoInvitationType = .voiceCall
+    var type: Int = 0
     var inviteesDict: [String : String] = [:]
     
-    init(_ invitationID: String, inviter: ZegoUIkitUser, invitees: [ZegoInvitationUser], type: ZegoInvitationType) {
+    init(_ invitationID: String, inviter: ZegoUIKitUser, invitees: [ZegoInvitationUser], type: Int) {
         super.init()
         self.invitationID = invitationID
         self.invitees = invitees

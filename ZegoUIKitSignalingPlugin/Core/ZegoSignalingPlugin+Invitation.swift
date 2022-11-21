@@ -36,7 +36,6 @@ class ZegoCallObject: NSObject {
         self.callStatus = .free
         self.inviterID = nil
         self.invitees = nil
-        //ZegoExpressEngine.shared().stopPreview()
     }
 }
 
@@ -55,7 +54,7 @@ extension ZegoSignalingPluginCore {
             let errorInvitees: [String]? = self.errorInviteesList(info.errorInvitees)
             if errorInfo.code == .success {
                 guard let inviter = ZegoUIKit.shared.localUserInfo else { return }
-                self.buildInvitatinData(call_id, inviter: inviter,invitees: invitees, type: ZegoInvitationType.init(rawValue: type) ?? .voiceCall)
+                self.buildInvitatinData(call_id, inviter: inviter,invitees: invitees, type: type)
                 self.updateInvitationData(call_id, invitees: errorInvitees ?? [], state: .error)
             }
             guard let callBack = callBack else {
@@ -139,10 +138,10 @@ extension ZegoSignalingPluginCore {
         })
     }
     
-    func buildInvitatinData(_ invitationID: String, inviter: ZegoUIkitUser, invitees: [String], type: ZegoInvitationType) {
+    func buildInvitatinData(_ invitationID: String, inviter: ZegoUIKitUser, invitees: [String], type: Int) {
         var newInvitees: [ZegoInvitationUser] = []
         for userID in invitees {
-            let user = ZegoUIkitUser.init(userID, "")
+            let user = ZegoUIKitUser.init(userID, "")
             let invitationUser = ZegoInvitationUser.init(user, state: .wating)
             newInvitees.append(invitationUser)
         }
@@ -225,8 +224,8 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         let data: String? = dataDic?["data"] as? String
         var newData: [String : AnyObject]? = data?.convertStringToDictionary()
         newData?["invitationID"] = callID as AnyObject
-        let user: ZegoUIkitUser = ZegoUIkitUser.init(info.inviter, dataDic?["inviter_name"] as? String ?? "")
-        self.buildInvitatinData(callID, inviter: user,invitees: [], type: ZegoInvitationType.init(rawValue: type) ?? .voiceCall)
+        let user: ZegoUIKitUser = ZegoUIKitUser.init(info.inviter, dataDic?["inviter_name"] as? String ?? "")
+        self.buildInvitatinData(callID, inviter: user,invitees: [], type: type)
         let pluginData: [String : AnyObject] = [
             "inviter": user,
             "type": type as AnyObject,
@@ -239,7 +238,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
 
     func zim(_ zim: ZIM, callInvitationAccepted info: ZIMCallInvitationAcceptedInfo, callID: String) {
         self.invitationDB.removeValue(forKey: callID)
-        let user: ZegoUIkitUser = ZegoUIkitUser.init(info.invitee, "")
+        let user: ZegoUIKitUser = ZegoUIKitUser.init(info.invitee, "")
         let pluginData: [String : AnyObject] = [
             "invitee": user,
             "data": info.extendedData as AnyObject
@@ -253,7 +252,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         let invitationData: InvitationData? = self.invitationDB[callID]
         if let invitationData = invitationData {
             let dataDic: Dictionary? = info.extendedData.convertStringToDictionary()
-            let user: ZegoUIkitUser = ZegoUIkitUser.init(info.invitee, dataDic?["inviter_name"] as? String ?? "")
+            let user: ZegoUIKitUser = ZegoUIKitUser.init(info.invitee, dataDic?["inviter_name"] as? String ?? "")
             if let invitees = invitationData.invitees {
                 for invitationUser in invitees {
                     if invitationUser.user?.userID == user.userID {
@@ -277,7 +276,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         self.invitationDB.removeValue(forKey: callID)
         let dataDic: Dictionary? = info.extendedData.convertStringToDictionary()
         let data: String? = dataDic?["data"] as? String
-        let user: ZegoUIkitUser = ZegoUIkitUser.init(info.inviter, dataDic?["inviter_name"] as? String ?? "")
+        let user: ZegoUIKitUser = ZegoUIKitUser.init(info.inviter, dataDic?["inviter_name"] as? String ?? "")
         let pluginData: [String : AnyObject] = [
             "inviter": user,
             "data": data as AnyObject
@@ -288,9 +287,9 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
     }
 
     func zim(_ zim: ZIM, callInviteesAnsweredTimeout invitees: [String], callID: String) {
-        var userList = [ZegoUIkitUser]()
+        var userList = [ZegoUIKitUser]()
         for userID in invitees {
-            let user = ZegoUIkitUser.init(userID, "")
+            let user = ZegoUIKitUser.init(userID, "")
             userList.append(user)
         }
         let pluginData: [String : AnyObject] = [
@@ -318,7 +317,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         guard let invitationData: InvitationData = self.invitationDB[callID],
               let userID = invitationData.inviter?.userID
         else { return }
-        let user = ZegoUIkitUser.init(userID, "")
+        let user = ZegoUIKitUser.init(userID, "")
         let pluginData: [String : AnyObject] = [
             "inviter": user
         ]

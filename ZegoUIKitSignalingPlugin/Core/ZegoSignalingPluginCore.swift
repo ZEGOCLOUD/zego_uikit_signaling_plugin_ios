@@ -28,7 +28,10 @@ class ZegoSignalingPluginCore: NSObject {
         let zimConfig: ZIMAppConfig = ZIMAppConfig()
         zimConfig.appID = appID
         zimConfig.appSign = appSign
-        self.zim = ZIM.create(with: zimConfig)
+        self.zim = ZIM.getInstance()
+        if self.zim == nil {
+            self.zim = ZIM.create(with: zimConfig)
+        }
         self.zim?.setEventHandler(self)
     }
     
