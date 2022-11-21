@@ -24,7 +24,7 @@ class ZegoCallObject: NSObject {
     var callStatus: ZegoCallStatus = .free
     var type: Int = 0
     
-    init(_ callID: String, type: ZegoInvitationType, callStatus: ZegoCallStatus, inviterID: String?, invitees: [String]?) {
+    init(_ callID: String, type: Int, callStatus: ZegoCallStatus, inviterID: String?, invitees: [String]?) {
         self.callID = callID
         self.callStatus = callStatus
         self.inviterID = inviterID
