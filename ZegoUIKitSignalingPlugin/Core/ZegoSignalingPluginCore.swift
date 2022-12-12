@@ -14,6 +14,8 @@ class ZegoSignalingPluginCore: NSObject {
     static let shared = ZegoSignalingPluginCore()
     
     var zim: ZIM?
+    var roomInfo: ZIMRoomInfo = ZIMRoomInfo()
+    
     var callObject: ZegoCallObject?
     // InvitationID : InvitationData
     var invitationDB: [String : InvitationData] = [:]
@@ -28,7 +30,7 @@ class ZegoSignalingPluginCore: NSObject {
         let zimConfig: ZIMAppConfig = ZIMAppConfig()
         zimConfig.appID = appID
         zimConfig.appSign = appSign
-        self.zim = ZIM.getInstance()
+        self.zim = ZIM.shared()
         if self.zim == nil {
             self.zim = ZIM.create(with: zimConfig)
         }
@@ -40,12 +42,20 @@ class ZegoSignalingPluginCore: NSObject {
         self.zim = nil
     }
     
-    func login(_ userID: String, userName: String) {
+    func login(_ userID: String, userName: String, callBack: PluginCallBack?) {
         let userInfo: ZIMUserInfo = ZIMUserInfo()
         userInfo.userID = userID
         userInfo.userName = userName
         self.zim?.login(with: userInfo, token: "", callback: { error in
+            guard let callBack = callBack else {
+                return
+            }
             
+            let callbackParams: [String : AnyObject] = [
+                "code": error.code.rawValue as AnyObject,
+                "message": error.message as AnyObject,
+            ]
+            callBack(callbackParams)
         })
     }
     

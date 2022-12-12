@@ -30,8 +30,8 @@ class ZegoPluginInvitationService: NSObject {
         pluginCore.uninit()
     }
     
-    func login(_ userID: String, userName: String) {
-        pluginCore.login(userID, userName: userName)
+    func login(_ userID: String, userName: String, callBack: PluginCallBack?) {
+        pluginCore.login(userID, userName: userName, callBack: callBack)
     }
     
     func loginOut() {

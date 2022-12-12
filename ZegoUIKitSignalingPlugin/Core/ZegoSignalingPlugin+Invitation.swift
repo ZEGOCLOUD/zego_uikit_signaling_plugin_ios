@@ -50,7 +50,7 @@ extension ZegoSignalingPluginCore {
         ]
         callInviteConfig.timeout = timeout
         callInviteConfig.extendedData = dataDict.jsonString
-        self.zim?.callInvite(withInvitees: invitees, config: callInviteConfig, callback: { call_id, info, errorInfo in
+        self.zim?.callInvite(with: invitees, config: callInviteConfig, callback: { call_id, info, errorInfo in
             let errorInvitees: [String]? = self.errorInviteesList(info.errorInvitees)
             if errorInfo.code == .success {
                 guard let inviter = ZegoUIKit.shared.localUserInfo else { return }
@@ -82,7 +82,7 @@ extension ZegoSignalingPluginCore {
         if let data = data {
             cancelConfig.extendedData = data
         }
-        self.zim?.callCancel(withInvitees: invitees, callID: callID, config: cancelConfig, callback: { call_id, errorInvitees, errorInfo in
+        self.zim?.callCancel(with: invitees, callID: callID, config: cancelConfig, callback: { call_id, errorInvitees, errorInfo in
             if errorInfo.code == .success {
                 self.invitationDB.removeValue(forKey: callID)
             }
@@ -115,7 +115,7 @@ extension ZegoSignalingPluginCore {
         if let data = data {
             rejectConfig.extendedData = data
         }
-        self.zim?.callReject(withCallID: refuseInvitationID, config: rejectConfig, callback: { call_id, errorInfo in
+        self.zim?.callReject(with: refuseInvitationID, config: rejectConfig, callback: { call_id, errorInfo in
             if errorInfo.code == .success {
                 self.invitationDB.removeValue(forKey: refuseInvitationID)
             }
@@ -131,7 +131,7 @@ extension ZegoSignalingPluginCore {
         if let data = data {
             acceptConfig.extendedData = data
         }
-        self.zim?.callAccept(withCallID: invitationID, config: acceptConfig, callback: { call_id, errorInfo in
+        self.zim?.callAccept(with: invitationID, config: acceptConfig, callback: { call_id, errorInfo in
             if errorInfo.code == .success {
                 self.invitationDB.removeValue(forKey: invitationID)
             }
@@ -336,6 +336,75 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         }
         for delegate in self.signalingPluginDelegates.allObjects {
             delegate.onPluginEvent?("onConnectionStateChanged_method", data: pluginData)
+        }
+    }
+    
+    //---UserInRoomAttributes
+    func zim(_ zim: ZIM, roomMemberAttributesUpdated infos: [ZIMRoomMemberAttributesUpdateInfo], operatedInfo: ZIMRoomOperatedInfo, roomID: String) {
+        var params: [String : AnyObject] = [:]
+        
+        var temInfos: [AnyObject] = []
+        for roomMemberAttri in infos {
+            var attributesInfo: [String : AnyObject] = [:]
+            let userID: String = roomMemberAttri.attributesInfo.userID
+            let attributes: [String: String] = roomMemberAttri.attributesInfo.attributes
+            attributesInfo["userID"] = userID as AnyObject
+            attributesInfo["attributes"] = attributes as AnyObject
+            temInfos.append(attributesInfo as AnyObject)
+        }
+        params["infos"] = temInfos as AnyObject
+        params["editor"] = operatedInfo.userID as AnyObject
+        
+        for delegate in self.signalingPluginDelegates.allObjects {
+            delegate.onPluginEvent?("onUsersInRoomAttributesUpdated_method", data: params)
+        }
+    }
+    
+    func zim(_ zim: ZIM, roomAttributesUpdated updateInfo: ZIMRoomAttributesUpdateInfo, roomID: String) {
+        var updateInfos: [AnyObject] = []
+        var param: [String : AnyObject] = [:]
+        param["isSet"] = (updateInfo.action == .set) as AnyObject
+        param["properties"] = updateInfo.roomAttributes as AnyObject
+        
+        updateInfos.append(param as AnyObject)
+        
+        var params: [String : AnyObject] = [:]
+        params["updateInfo"] = updateInfos as AnyObject
+
+        for delegate in self.signalingPluginDelegates.allObjects {
+            delegate.onPluginEvent?("onRoomPropertiesUpdated_method", data: params)
+        }
+    }
+    
+    func zim(_ zim: ZIM, roomAttributesBatchUpdated updateInfo: [ZIMRoomAttributesUpdateInfo], roomID: String) {
+        var updateInfos: [AnyObject] = []
+        for info in updateInfo {
+            var param: [String : AnyObject] = [:]
+            param["isSet"] = (info.action == .set) as AnyObject
+            param["properties"] = info.roomAttributes as AnyObject
+            updateInfos.append(param as AnyObject)
+        }
+        var params: [String : AnyObject] = [:]
+        params["updateInfo"] = updateInfos as AnyObject
+        
+        for delegate in self.signalingPluginDelegates.allObjects {
+            delegate.onPluginEvent?("onRoomPropertiesUpdated_method", data: params)
+        }
+    }
+    
+    func zim(_ zim: ZIM, roomMemberLeft memberList: [ZIMUserInfo], roomID: String) {
+        var params: [String : AnyObject] = [:]
+        var userIDList: [String] = []
+        for mem in memberList {
+            if mem.userID.count > 0 {
+                userIDList.append(mem.userID)
+            }
+        }
+        params["userIDList"] = userIDList as AnyObject
+        params["roomID"] = roomID as AnyObject
+        
+        for delegate in self.signalingPluginDelegates.allObjects {
+            delegate.onPluginEvent?("onRoomMemberLeft_method", data: params)
         }
     }
 }

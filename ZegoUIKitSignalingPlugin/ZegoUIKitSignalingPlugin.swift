@@ -38,7 +38,7 @@ public class ZegoUIKitSignalingPlugin: ZegoUIKitPlugin {
             else {
                 return
             }
-            invitationService.login(userID, userName: userName)
+            invitationService.login(userID, userName: userName, callBack: callBack)
         case .logout_method:
             invitationService.loginOut()
         case .sendInvitation_method:
@@ -67,6 +67,66 @@ public class ZegoUIKitSignalingPlugin: ZegoUIKitPlugin {
             let data: String? = params["data"] as? String
             guard let inviterID = inviterID else { return }
             invitationService.acceptInvitation(inviterID, data: data, callBack: callBack)
+
+        case .joinRoom_metnod:
+            guard let params = params else { return }
+            let roomID: String? = params["roomID"] as? String
+            guard let roomID = roomID else { return }
+            
+            invitationService.joinRoom(roomID: roomID, callBack: callBack)
+        case .leaveRoom_metnod:
+            invitationService.leaveRoom(callBack)
+            
+        case .setUsersInRoomAttributes_method:
+            guard let params = params else { return }
+            let key: String? = params["key"] as? String
+            let value: String? = params["value"] as? String
+            let userIDs: [String]? = params["userIDs"] as? [String]
+            let roomID: String? = params["roomID"] as? String
+            guard let userIDs = userIDs , let roomID = roomID else { return }
+            
+            invitationService.setUsersInRoomAttributes(key ?? "",value:value ?? "", userIDs: userIDs, roomID: roomID, callBack: callBack)
+            
+        case .queryUsersInRoomAttributes_method:
+            guard let params = params else { return }
+            let count: Int? = params["count"] as? Int
+            let nextFlag: String? = params["nextFlag"] as? String
+            
+            invitationService.queryUsersInRoomAttributes(count ?? 100, nextFlag: nextFlag ?? "", callBack: callBack)
+            
+        case .updateRoomProperty_method:
+            guard let params = params else { return }
+            
+            let key: String? = params["key"] as? String
+            let value: String? = params["value"] as? String
+            let isForce: Bool = params["isForce"] as! Bool
+            let isDeleteAfterOwnerLeft: Bool = params["isDeleteAfterOwnerLeft"] as! Bool
+            let isUpdateOwner: Bool = params["isUpdateOwner"] as! Bool
+            invitationService.updateRoomProperty(key ?? "", value: value ?? "", isDeleteAfterOwnerLeft: isDeleteAfterOwnerLeft, isForce: isForce, isUpdateOwner: isUpdateOwner, callBack: callBack)
+            
+        case .deleteRoomProperties_method:
+            guard let params = params else { return }
+            
+            let isForce: Bool = params["isForce"] as! Bool
+            let keys: [String]? = params["keys"] as? [String]
+            
+            invitationService.deleteRoomProperties(keys ?? [], isForce: isForce, callBack: callBack)
+            
+        case .beginRoomPropertiesBatchOperation_method:
+            guard let params = params else { return }
+            
+            let isForce: Bool = params["isForce"] as! Bool
+            let isDeleteAfterOwnerLeft: Bool = params["isDeleteAfterOwnerLeft"] as! Bool
+            let isUpdateOwner: Bool = params["isUpdateOwner"] as! Bool
+            
+            invitationService.beginRoomPropertiesBatchOperation( isDeleteAfterOwnerLeft, isForce: isForce, isUpdateOwner: isUpdateOwner)
+            
+        case .endRoomPropertiesBatchOperation_method:
+            invitationService.endRoomPropertiesBatchOperation(callBack)
+            
+        case .queryRoomProperties_method:
+            invitationService.queryRoomProperties(callBack)
+            
         default:
             break
         }
