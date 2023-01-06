@@ -407,4 +407,29 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
             delegate.onPluginEvent?("onRoomMemberLeft_method", data: params)
         }
     }
+    
+    func zim(_ zim: ZIM, receiveRoomMessage messageList: [ZIMMessage], fromRoomID: String) {
+        
+        var params: [String : AnyObject] = [:]
+        params["roomID"] = fromRoomID as AnyObject
+        var newMessageList: [[String: AnyObject]] = []
+        for message in messageList {
+            if message.type == .text {
+                let textMessage: ZIMTextMessage = message as! ZIMTextMessage
+                var messageDict: [String: AnyObject] = [
+                    "messageID": textMessage.messageID as AnyObject,
+                    "timestamp": textMessage.timestamp as AnyObject,
+                    "orderKey": textMessage.orderKey as AnyObject,
+                    "senderUserID": textMessage.senderUserID as AnyObject,
+                    "text": textMessage.message as AnyObject
+                ]
+                newMessageList.append(messageDict)
+            }
+        }
+        params["messageList"] = newMessageList as AnyObject
+        
+        for delegate in self.signalingPluginDelegates.allObjects {
+            delegate.onPluginEvent?("onRoomTextMessageReceive_method", data: params)
+        }
+    }
 }
