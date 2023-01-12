@@ -7,6 +7,7 @@
 
 import Foundation
 import ZIM
+import ZPNs
 import ZegoUIKitSDK
 
 enum ZegoCallStatus: Int {
@@ -41,7 +42,7 @@ class ZegoCallObject: NSObject {
 
 extension ZegoSignalingPluginCore {
     
-    func sendInvitation(_ invitees: [String], timeout: UInt32, type: Int, data: String?, callBack: PluginCallBack?) {
+    func sendInvitation(_ invitees: [String], timeout: UInt32, type: Int, data: String?, notificationConfig: ZegoSignalingPluginNotificationConfig?, callBack: PluginCallBack?) {
         let callInviteConfig: ZIMCallInviteConfig = ZIMCallInviteConfig()
         let dataDict:[String:AnyObject] = [
             "type": type as AnyObject,
@@ -50,6 +51,18 @@ extension ZegoSignalingPluginCore {
         ]
         callInviteConfig.timeout = timeout
         callInviteConfig.extendedData = dataDict.jsonString
+        if self.notifyWhenAppRunningInBackgroundOrQuit , let config = notificationConfig {
+            
+            let resourcesID: String? = config.resourceID
+            let title: String? = config.title
+            let message: String? = config.message
+            let pushConfig: ZIMPushConfig = ZIMPushConfig()
+            pushConfig.resourcesID =  resourcesID ?? ""
+            pushConfig.title = title ?? ""
+            pushConfig.content = message ?? ""
+            pushConfig.payload = data ?? ""
+            callInviteConfig.pushConfig = pushConfig
+        }
         self.zim?.callInvite(with: invitees, config: callInviteConfig, callback: { call_id, info, errorInfo in
             let errorInvitees: [String]? = self.errorInviteesList(info.errorInvitees)
             if errorInfo.code == .success {
@@ -215,9 +228,31 @@ extension ZegoSignalingPluginCore {
         }
         return errorInviteesList
     }
+    
+    func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool, isSandboxEnvironment: Bool) {
+        self.notifyWhenAppRunningInBackgroundOrQuit = enable
+        if enable == true {
+            self.isSandboxEnvironment = isSandboxEnvironment
+            let center: UNUserNotificationCenter = UNUserNotificationCenter.current()
+            center.delegate = ZPNs.shared() as? any UNUserNotificationCenterDelegate
+            center.requestAuthorization(options: [.alert,.badge,.sound,.criticalAlert]) { (granted: Bool, error: Error?) in
+                  if granted {
+                      DispatchQueue.main.sync {
+                          ZPNs.shared().registerAPNs()
+                          ZPNs.shared().setZPNsNotificationCenterDelegate(self)
+                          UIApplication.shared.registerForRemoteNotifications()
+                      }
+                  }
+            }
+        }
+    }
+    
+    func setRemoteNotificationsDeviceToken(_ deviceToken: Data) {
+        ZPNs.shared().setDeviceToken(deviceToken, isProduct: !self.isSandboxEnvironment)
+    }
 }
 
-extension ZegoSignalingPluginCore: ZIMEventHandler {
+extension ZegoSignalingPluginCore: ZIMEventHandler, ZPNsNotificationCenterDelegate {
     func zim(_ zim: ZIM, callInvitationReceived info: ZIMCallInvitationReceivedInfo, callID: String) {
         let dataDic: Dictionary? = info.extendedData.convertStringToDictionary()
         let type: Int = dataDic?["type"] as! Int
@@ -241,7 +276,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         let user: ZegoUIKitUser = ZegoUIKitUser.init(info.invitee, "")
         let pluginData: [String : AnyObject] = [
             "invitee": user,
-            "data": info.extendedData as AnyObject
+            "data": info.extendedData as AnyObject,
         ]
         for delegate in self.signalingPluginDelegates.allObjects {
             delegate.onPluginEvent?("onCallInvitationAccepted_method", data: pluginData)
@@ -261,10 +296,11 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
                 }
             }
             self.clearCall(callID)
-            let data: String? = dataDic?["data"] as? String
+//            let data: String? = dataDic?["data"] as? String
+            let data: String? = dataDic?.jsonString as? String
             let pluginData: [String : AnyObject] = [
                 "invitee": user,
-                "data": data as AnyObject
+                "data": data as AnyObject,
             ]
             for delegate in self.signalingPluginDelegates.allObjects {
                 delegate.onPluginEvent?("onCallInvitationRejected_method", data: pluginData)
@@ -279,7 +315,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         let user: ZegoUIKitUser = ZegoUIKitUser.init(info.inviter, dataDic?["inviter_name"] as? String ?? "")
         let pluginData: [String : AnyObject] = [
             "inviter": user,
-            "data": data as AnyObject
+            "data": data as AnyObject,
         ]
         for delegate in self.signalingPluginDelegates.allObjects {
             delegate.onPluginEvent?("onCallInvitationCancelled_method", data: pluginData)
@@ -293,7 +329,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
             userList.append(user)
         }
         let pluginData: [String : AnyObject] = [
-            "invitees": userList as AnyObject
+            "invitees": userList as AnyObject,
         ]
         for delegate in self.signalingPluginDelegates.allObjects {
             delegate.onPluginEvent?("onCallInviteesAnsweredTimeout_method", data: pluginData)
@@ -319,7 +355,7 @@ extension ZegoSignalingPluginCore: ZIMEventHandler {
         else { return }
         let user = ZegoUIKitUser.init(userID, "")
         let pluginData: [String : AnyObject] = [
-            "inviter": user
+            "inviter": user,
         ]
         for delegate in self.signalingPluginDelegates.allObjects {
             delegate.onPluginEvent?("onCallInvitationTimeout_method", data: pluginData)

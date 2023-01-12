@@ -19,6 +19,8 @@ class ZegoSignalingPluginCore: NSObject {
     var callObject: ZegoCallObject?
     // InvitationID : InvitationData
     var invitationDB: [String : InvitationData] = [:]
+    var notifyWhenAppRunningInBackgroundOrQuit: Bool = false
+    var isSandboxEnvironment: Bool = false
 
     let signalingPluginDelegates: NSHashTable<ZegoPluginEventHandle> = NSHashTable(options: .weakMemory)
     

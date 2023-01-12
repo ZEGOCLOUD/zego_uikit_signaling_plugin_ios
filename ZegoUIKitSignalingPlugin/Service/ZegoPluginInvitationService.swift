@@ -38,8 +38,8 @@ class ZegoPluginInvitationService: NSObject {
         pluginCore.loginOut()
     }
 
-    func sendInvitation(_ invitees: [String], timeout: UInt32, type: Int, data: String?, callBack: PluginCallBack?) {
-        pluginCore.sendInvitation(invitees, timeout: timeout, type: type, data: data, callBack: callBack)
+    func sendInvitation(_ invitees: [String], timeout: UInt32, type: Int, data: String?, notificationConfig: ZegoSignalingPluginNotificationConfig?, callBack: PluginCallBack?) {
+        pluginCore.sendInvitation(invitees, timeout: timeout, type: type, data: data, notificationConfig: notificationConfig, callBack: callBack)
     }
 
     func cancelInvitation(_ invitees: [String], data: String?, callBack: PluginCallBack?) {
@@ -52,6 +52,14 @@ class ZegoPluginInvitationService: NSObject {
 
     func acceptInvitation(_ inviterID: String, data: String?, callBack: PluginCallBack?) {
         pluginCore.acceptInvitation(inviterID, data: data, callBack: callBack)
+    }
+    
+    func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool, isSandboxEnvironment: Bool) {
+        pluginCore.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
+    }
+    
+    func setRemoteNotificationsDeviceToken(_ deviceToken: Data) {
+        pluginCore.setRemoteNotificationsDeviceToken(deviceToken)
     }
 
 }

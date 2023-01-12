@@ -47,8 +47,9 @@ public class ZegoUIKitSignalingPlugin: ZegoUIKitPlugin {
             let timeout: UInt32 = params["timeout"] as! UInt32
             let type: Int = params["type"] as! Int
             let data: String? = params["data"] as? String
+            let notificationConfig: ZegoSignalingPluginNotificationConfig? = params["notificationConfig"] as? ZegoSignalingPluginNotificationConfig
             guard let invitees = invitees else { return }
-            invitationService.sendInvitation(invitees, timeout: timeout, type: type, data: data, callBack: callBack)
+            invitationService.sendInvitation(invitees, timeout: timeout, type: type, data: data, notificationConfig: notificationConfig, callBack: callBack)
         case .cancelInvitation_method:
             guard let params = params else { return }
             let invitees: [String]? = params["invitees"] as? [String]
@@ -126,6 +127,18 @@ public class ZegoUIKitSignalingPlugin: ZegoUIKitPlugin {
             
         case .queryRoomProperties_method:
             invitationService.queryRoomProperties(callBack)
+            
+        case .onEnableNotifyWhenAppRunningInBackgroundOrQuit_method:
+            guard let params = params else { return }
+            
+            let enable: Bool = params["enable"] as! Bool
+            let isSandboxEnvironment: Bool = params["isSandboxEnvironment"] as! Bool
+            invitationService.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
+        case .onSetRemoteNotificationsDeviceToken_method:
+            guard let params = params else { return }
+            
+            let deviceToken: Data? = params["deviceToken"] as? Data
+            invitationService.setRemoteNotificationsDeviceToken(deviceToken ?? Data())
             
         default:
             break
