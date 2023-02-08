@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "ZegoUIKitSignalingPlugin"
-  spec.version      = "1.4.0"
+  spec.version      = "2.0.0"
   spec.summary      = "ZegoUIKitSignalingPlugin iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -75,7 +75,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/ZEGOCLOUD/zego_uikit_signaling_plugin_ios.git", :tag => "v#{spec.version.to_s}"}
+  spec.source       = { :git => "https://github.com/ZEGOCLOUD/zego_uikit_signaling_plugin_ios.git", :tag => "#{spec.version.to_s}"}
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -129,7 +129,7 @@ Pod::Spec.new do |spec|
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # spec.dependency "JSONKit", "~> 1.4"
-  spec.dependency 'ZegoUIKit', '>=1.9.0'
   spec.dependency 'ZIM', '2.5.0'
   spec.dependency 'ZPNs', '2.0.1'
+  spec.dependency 'ZegoPluginAdapter'
 end

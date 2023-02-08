@@ -6,155 +6,120 @@
 //
 
 import UIKit
-import ZegoUIKitSDK
+import ZegoPluginAdapter
+import ZIM
 
-public class ZegoUIKitSignalingPlugin: ZegoUIKitPlugin {
+public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
     
-    let invitationService = ZegoPluginInvitationService.shared
     
-    public override init() {
-        super.init()
-    }
-
-    public override func invoke(_ method: String, params: Dictionary<String, AnyObject>?, callBack: PluginCallBack?) {
-        let methodName: ZegoPluginMethodName? = ZegoPluginMethodName.init(rawValue: method)
-        guard let methodName = methodName else {
-            return
-        }
-        switch methodName {
-        case .init_method:
-            guard let params = params else { return }
-            let appID: UInt32 = params["appID"] as! UInt32
-            let appSign: String = params["appSign"] as! String
-            invitationService.initWithAppID(appID: appID, appSign: appSign)
-        case .uinit_method:
-            invitationService.uninit()
-        case .login_method:
-            guard let params = params else { return }
-            let userID: String? = params["userID"] as? String
-            let userName: String? = params["userName"] as? String
-            guard let userID = userID,
-                  let userName = userName
-            else {
-                return
-            }
-            invitationService.login(userID, userName: userName, callBack: callBack)
-        case .logout_method:
-            invitationService.loginOut()
-        case .sendInvitation_method:
-            guard let params = params else { return }
-            let invitees: [String]? = params["invitees"] as? [String]
-            let timeout: UInt32 = params["timeout"] as! UInt32
-            let type: Int = params["type"] as! Int
-            let data: String? = params["data"] as? String
-            let notificationConfig: ZegoSignalingPluginNotificationConfig? = params["notificationConfig"] as? ZegoSignalingPluginNotificationConfig
-            guard let invitees = invitees else { return }
-            invitationService.sendInvitation(invitees, timeout: timeout, type: type, data: data, notificationConfig: notificationConfig, callBack: callBack)
-        case .cancelInvitation_method:
-            guard let params = params else { return }
-            let invitees: [String]? = params["invitees"] as? [String]
-            let data: String? = params["data"] as? String
-            guard let invitees = invitees else { return }
-            invitationService.cancelInvitation(invitees, data: data, callBack: callBack)
-        case .refuseInvitation_method:
-            guard let params = params else { return }
-            let inviterID: String? = params["inviterID"] as? String
-            let data: String? = params["data"] as? String
-            guard let inviterID = inviterID else { return }
-            invitationService.refuseInvitation(inviterID, data: data, callBack: callBack)
-        case .acceptInvitation_method:
-            guard let params = params else { return }
-            let inviterID: String? = params["inviterID"] as? String
-            let data: String? = params["data"] as? String
-            guard let inviterID = inviterID else { return }
-            invitationService.acceptInvitation(inviterID, data: data, callBack: callBack)
-
-        case .joinRoom_metnod:
-            guard let params = params else { return }
-            let roomID: String? = params["roomID"] as? String
-            guard let roomID = roomID else { return }
-            
-            invitationService.joinRoom(roomID: roomID, callBack: callBack)
-        case .leaveRoom_metnod:
-            invitationService.leaveRoom(callBack)
-            
-        case .setUsersInRoomAttributes_method:
-            guard let params = params else { return }
-            let key: String? = params["key"] as? String
-            let value: String? = params["value"] as? String
-            let userIDs: [String]? = params["userIDs"] as? [String]
-            let roomID: String? = params["roomID"] as? String
-            guard let userIDs = userIDs , let roomID = roomID else { return }
-            
-            invitationService.setUsersInRoomAttributes(key ?? "",value:value ?? "", userIDs: userIDs, roomID: roomID, callBack: callBack)
-            
-        case .queryUsersInRoomAttributes_method:
-            guard let params = params else { return }
-            let count: Int? = params["count"] as? Int
-            let nextFlag: String? = params["nextFlag"] as? String
-            
-            invitationService.queryUsersInRoomAttributes(count ?? 100, nextFlag: nextFlag ?? "", callBack: callBack)
-            
-        case .updateRoomProperty_method:
-            guard let params = params else { return }
-            
-            let key: String? = params["key"] as? String
-            let value: String? = params["value"] as? String
-            let isForce: Bool = params["isForce"] as! Bool
-            let isDeleteAfterOwnerLeft: Bool = params["isDeleteAfterOwnerLeft"] as! Bool
-            let isUpdateOwner: Bool = params["isUpdateOwner"] as! Bool
-            invitationService.updateRoomProperty(key ?? "", value: value ?? "", isDeleteAfterOwnerLeft: isDeleteAfterOwnerLeft, isForce: isForce, isUpdateOwner: isUpdateOwner, callBack: callBack)
-            
-        case .deleteRoomProperties_method:
-            guard let params = params else { return }
-            
-            let isForce: Bool = params["isForce"] as! Bool
-            let keys: [String]? = params["keys"] as? [String]
-            
-            invitationService.deleteRoomProperties(keys ?? [], isForce: isForce, callBack: callBack)
-            
-        case .beginRoomPropertiesBatchOperation_method:
-            guard let params = params else { return }
-            
-            let isForce: Bool = params["isForce"] as! Bool
-            let isDeleteAfterOwnerLeft: Bool = params["isDeleteAfterOwnerLeft"] as! Bool
-            let isUpdateOwner: Bool = params["isUpdateOwner"] as! Bool
-            
-            invitationService.beginRoomPropertiesBatchOperation( isDeleteAfterOwnerLeft, isForce: isForce, isUpdateOwner: isUpdateOwner)
-            
-        case .endRoomPropertiesBatchOperation_method:
-            invitationService.endRoomPropertiesBatchOperation(callBack)
-            
-        case .queryRoomProperties_method:
-            invitationService.queryRoomProperties(callBack)
-            
-        case .onEnableNotifyWhenAppRunningInBackgroundOrQuit_method:
-            guard let params = params else { return }
-            
-            let enable: Bool = params["enable"] as! Bool
-            let isSandboxEnvironment: Bool = params["isSandboxEnvironment"] as! Bool
-            invitationService.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
-        case .onSetRemoteNotificationsDeviceToken_method:
-            guard let params = params else { return }
-            
-            let deviceToken: Data? = params["deviceToken"] as? Data
-            invitationService.setRemoteNotificationsDeviceToken(deviceToken ?? Data())
-            
-        default:
-            break
-        }
+    public static let shared = ZegoUIKitSignalingPlugin()
+    
+    public init() {
+        
     }
     
-    public override func registerPluginEventHandler(_ object: ZegoPluginEventHandle) {
-        invitationService.registerPluginEventHandler(object)
+    
+    let service = ZegoUIKitSignalingPluginService.shared
+    
+    public var pluginType: ZegoPluginType {
+        .signaling
+    }
+        
+    public var version: String {
+        "1.0.0"
     }
     
-    public override func getVersion() -> String {
-        return "1.0.0"
+    
+    public func initWith(appID: UInt32, appSign: String?) {
+        service.initWith(appID: appID, appSign: appSign)
     }
     
-    public override func getPluginType() -> ZegoUIKitPluginType {
-        return .signaling
+    public func connectUser(userID: String, userName: String, token: String? = nil, callback: ConnectUserCallback?) {
+        service.connectUser(userID: userID, userName: userName, token: token, callback: callback)
+    }
+    
+    
+    public func disconnectUser() {
+        service.disconnectUser()
+    }
+    
+    public func renewToken(_ token: String, callback: RenewTokenCallback?) {
+        service.renewToken(token, callback: callback)
+    }
+    
+    
+    public func sendInvitation(with invitees: [String], timeout: UInt32, data: String?, notificationConfig: ZegoSignalingPluginNotificationConfig?,callback: InvitationCallback?) {
+        service.sendInvitation(with: invitees, timeout: timeout, data: data, notificationConfig: notificationConfig, callback: callback)
+    }
+    
+    public func cancelInvitation(with invitees: [String], invitationID: String, data: String?, callback: CancelInvitationCallback?) {
+        service.cancelInvitation(with: invitees, invitationID: invitationID, data: data, callback: callback)
+    }
+    
+    public func refuseInvitation(with invitationID: String, data: String?, callback: ResponseInvitationCallback?) {
+        service.refuseInvitation(with: invitationID, data: data, callback: callback)
+    }
+    
+    public func acceptInvitation(with invitationID: String, data: String?, callback: ResponseInvitationCallback?) {
+        service.acceptInvitation(with: invitationID, data: data, callback: callback)
+    }
+    
+    public func joinRoom(with roomID: String, roomName: String?, callBack: RoomCallback?) {
+        service.joinRoom(with: roomID, roomName: roomName, callBack: callBack)
+    }
+    
+    public func leaveRoom(by roomID: String, callBack: RoomCallback?) {
+        service.leaveRoom(by: roomID, callBack: callBack)
+    }
+    
+    public func setUsersInRoomAttributes(with attributes: [String : String], userIDs: [String], roomID: String, callback: SetUsersInRoomAttributesCallback?) {
+        service.setUsersInRoomAttributes(with: attributes, userIDs: userIDs, roomID: roomID, callback: callback)
+    }
+    
+    public func queryUsersInRoomAttributes(by roomID: String, count: UInt32, nextFlag: String, callback: QueryUsersInRoomAttributesCallback?) {
+        service.queryUsersInRoomAttributes(by: roomID, count: count, nextFlag: nextFlag, callback: callback)
+    }
+    
+    public func updateRoomProperty(_ attributes: [String : String], roomID: String, isForce: Bool, isDeleteAfterOwnerLeft: Bool, isUpdateOwner: Bool, callback: RoomPropertyOperationCallback?) {
+        service.updateRoomProperty(attributes, roomID: roomID, isForce: isForce, isDeleteAfterOwnerLeft: isDeleteAfterOwnerLeft, isUpdateOwner: isUpdateOwner, callback: callback)
+    }
+    
+    public func deleteRoomProperties(by keys: [String], roomID: String, isForce: Bool, callback: RoomPropertyOperationCallback?) {
+        service.deleteRoomProperties(by: keys, roomID: roomID, isForce: isForce, callback: callback)
+    }
+    
+    public func beginRoomPropertiesBatchOperation(with roomID: String, isDeleteAfterOwnerLeft: Bool, isForce: Bool, isUpdateOwner: Bool) {
+        service.beginRoomPropertiesBatchOperation(with: roomID, isDeleteAfterOwnerLeft: isDeleteAfterOwnerLeft, isForce: isForce, isUpdateOwner: isUpdateOwner)
+    }
+    
+    public func endRoomPropertiesBatchOperation(with roomID: String, callback: EndRoomBatchOperationCallback?) {
+        service.endRoomPropertiesBatchOperation(with: roomID, callback: callback)
+    }
+    
+    public func queryRoomProperties(by roomID: String, callback: QueryRoomPropertyCallback?) {
+        service.queryRoomProperties(by: roomID, callback: callback)
+    }
+    
+    public func sendRoomMessage(_ text: String, roomID: String, callback: SendRoomMessageCallback?) {
+        service.sendRoomMessage(text, roomID: roomID, callback: callback)
+    }
+    
+    public func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool,
+                                                             isSandboxEnvironment: Bool) {
+        service.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
+    }
+    
+    public func setRemoteNotificationsDeviceToken(_ deviceToken: Data) {
+        service.setRemoteNotificationsDeviceToken(deviceToken)
+    }
+    
+    
+    public func registerPluginEventHandler(_ delegate: ZegoSignalingPluginEventHandler) {
+        service.registerPluginEventHandler(delegate)
+    }
+    
+    public func registerZIMEventHandler(_ handler: ZIMEventHandler) {
+        service.registerZIMEventHandler(handler)
     }
     
 }

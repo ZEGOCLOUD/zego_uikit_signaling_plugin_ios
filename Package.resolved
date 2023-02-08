@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "zego_plugin_adapter_ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZEGOCLOUD/zego_plugin_adapter_ios.git",
+      "state" : {
+        "revision" : "e7d7c51ffaac10e5a9bf3daab781efdbe02f1094",
+        "version" : "0.0.2"
+      }
+    }
+  ],
+  "version" : 2
+}
