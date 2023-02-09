@@ -15,10 +15,12 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/ZEGOCLOUD/zego_plugin_adapter_ios.git", from: "2.0.0")
+        .package(url: "https://github.com/ZEGOCLOUD/zego_plugin_adapter_ios.git", from: "2.0.0"),
+        .package(url: "https://github.com/zegolibrary/zpns-ios.git", exact: "2.0.1"),
+        .package(url: "https://github.com/zegolibrary/zim-ios.git", exact: "2.5.0"),
     ],
     
     targets: [
-        .target(name: "ZegoUIKitSignalingPlugin", dependencies: [.product(name: "ZegoPluginAdapter", package: "zego_plugin_adapter_ios")], path: "ZegoUIKitSignalingPlugin"),
+        .target(name: "ZegoUIKitSignalingPlugin", dependencies: [.product(name: "ZPNs", package: "zpns-ios"), .product(name: "ZegoPluginAdapter", package: "zego_plugin_adapter_ios"), .product(name: "ZIM", package: "zim-ios")], path: "ZegoUIKitSignalingPlugin"),
     ]
 )
