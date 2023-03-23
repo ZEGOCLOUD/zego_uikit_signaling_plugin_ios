@@ -5,7 +5,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ZEGOCLOUD/zego_plugin_adapter_ios.git",
       "state" : {
-        "revision" : "b0a897f8ed5ff79daa2f0a43fe795c0db5626ebb",
+        "revision" : "99ca2afa08cf6b14ac528e5a6b6101a25c5ec1b1",
         "version" : "2.0.0"
       }
     },
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zegolibrary/zim-ios.git",
       "state" : {
-        "revision" : "b03689e7dc4d3fe4de0d22c35b48647f1e0dfbb8",
-        "version" : "2.5.0"
+        "revision" : "dc693a0cd44284a9286715f50f780cecea58d0f0",
+        "version" : "2.7.1"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zegolibrary/zpns-ios.git",
       "state" : {
-        "revision" : "4cc14ad27ba79b972483e72ec04a91566f5e1e57",
-        "version" : "2.0.1"
+        "revision" : "8623d13fb7d55634d311281765e34f02a3a91b65",
+        "version" : "2.1.0"
       }
     }
   ],

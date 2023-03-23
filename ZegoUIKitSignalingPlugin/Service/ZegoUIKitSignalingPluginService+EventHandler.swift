@@ -240,6 +240,12 @@ extension ZegoUIKitSignalingPluginService: ZIMEventHandler {
         }
     }
     
+    func zim(_ zim: ZIM, messageSentStatusChanged messageSentStatusChangeInfoList: [ZIMMessageSentStatusChangeInfo]) {
+        for handler in zimEventHandlers.allObjects {
+            handler.zim?(zim, messageSentStatusChanged: messageSentStatusChangeInfoList)
+        }
+    }
+    
     // MARK: - Group
     func zim(_ zim: ZIM, groupStateChanged state: ZIMGroupState, event: ZIMGroupEvent, operatedInfo: ZIMGroupOperatedInfo, groupInfo: ZIMGroupFullInfo) {
         for handler in zimEventHandlers.allObjects {

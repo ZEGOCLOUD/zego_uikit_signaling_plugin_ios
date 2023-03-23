@@ -44,7 +44,13 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         user.userName = userName
         userInfo = user
         zim?.login(with: user, token: token ?? "") { error in
-            callback?(error.code.rawValue, error.message)
+            var code = error.code.rawValue
+            var message = error.message
+            if error.code == .networkModuleUserHasAlreadyLogged {
+                code = 0
+                message = ""
+            }
+            callback?(code, message)
         }
     }
     

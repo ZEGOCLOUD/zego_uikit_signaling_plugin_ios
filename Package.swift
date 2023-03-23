@@ -16,8 +16,8 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/ZEGOCLOUD/zego_plugin_adapter_ios.git", from: "2.0.0"),
-        .package(url: "https://github.com/zegolibrary/zpns-ios.git", exact: "2.0.1"),
-        .package(url: "https://github.com/zegolibrary/zim-ios.git", exact: "2.5.0"),
+        .package(url: "https://github.com/zegolibrary/zpns-ios.git", exact: "2.1.0"),
+        .package(url: "https://github.com/zegolibrary/zim-ios.git", exact: "2.7.1"),
     ],
     
     targets: [
