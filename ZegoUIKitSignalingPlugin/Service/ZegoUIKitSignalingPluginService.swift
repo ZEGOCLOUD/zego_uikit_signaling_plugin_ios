@@ -116,7 +116,6 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         self.isSandboxEnvironment = isSandboxEnvironment
         if enable == true {
             let center: UNUserNotificationCenter = UNUserNotificationCenter.current()
-            center.delegate = ZPNs.shared() as? any UNUserNotificationCenterDelegate
             center.requestAuthorization(options: [.alert,.badge,.sound,.criticalAlert]) { (granted: Bool, error: Error?) in
                   if granted {
                       DispatchQueue.main.sync {
@@ -141,4 +140,7 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         zimEventHandlers.add(handler)
     }
 
+    func onRegistered(_ Pushid: String) {
+        debugPrint("onRegistered, push id: \(Pushid)")
+    }
 }
