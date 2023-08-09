@@ -206,18 +206,36 @@ extension ZegoUIKitSignalingPluginService: ZIMEventHandler {
             handler.zim?(zim, receiveRoomMessage: messageList, fromRoomID: fromRoomID)
         }
         
-        var messages = [ZegoSignalingInRoomTextMessage]()
+        var textMessages = [ZegoSignalingInRoomTextMessage]()
+        var commandMessages = [ZegoSignalingInRoomCommandMessage]()
         for msg in messageList {
-            guard let msg = msg as? ZIMTextMessage else { continue }
-            let newMsg = ZegoSignalingInRoomTextMessage(messageID: msg.messageID,
-                                                                    timestamp: msg.timestamp,
-                                                                    orderKey: msg.orderKey,
-                                                                    senderUserID: msg.senderUserID,
-                                                                    text: msg.message)
-            messages.append(newMsg)
+            if msg.type == .text {
+                guard let msg = msg as? ZIMTextMessage else { continue }
+                let newMsg = ZegoSignalingInRoomTextMessage(messageID: msg.messageID,
+                                                                        timestamp: msg.timestamp,
+                                                                        orderKey: msg.orderKey,
+                                                                        senderUserID: msg.senderUserID,
+                                                                        text: msg.message)
+                textMessages.append(newMsg)
+            } else if msg.type == .command {
+                guard let msg = msg as? ZIMCommandMessage,
+                      let command = String(data: msg.message, encoding: .utf8)
+                else { continue }
+                let newMsg = ZegoSignalingInRoomCommandMessage(messageID: msg.messageID,
+                                                                        timestamp: msg.timestamp,
+                                                                        orderKey: msg.orderKey,
+                                                                        senderUserID: msg.senderUserID,
+                                                               command: command)
+                commandMessages.append(newMsg)
+            }
         }
         for handler in pluginEventHandlers.allObjects {
-            handler.onInRoomTextMessageReceived(messages, roomID: fromRoomID)
+            if textMessages.count > 0 {
+                handler.onInRoomTextMessageReceived(textMessages, roomID: fromRoomID)
+            }
+            if commandMessages.count > 0 {
+                handler.onInRoomCommandMessageReceived(commandMessages, roomID: fromRoomID)
+            }
         }
         
     }

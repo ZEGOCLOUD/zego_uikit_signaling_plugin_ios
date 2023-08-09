@@ -20,5 +20,12 @@ extension ZegoUIKitSignalingPluginService {
         })
     }
         
-    
+    public func sendRoomCommand(_ command: String, roomID: String, callback: SendRoomMessageCallback?) {
+        guard let commandData = command.data(using: .utf8) else { return }
+        let msg = ZIMCommandMessage(message: commandData)
+        let config = ZIMMessageSendConfig()
+        zim?.sendMessage(msg, toConversationID: roomID, conversationType: .room, config: config, notification: nil, callback: { msg, error in
+            callback?(error.code.rawValue, error.message)
+        })
+    }
 }

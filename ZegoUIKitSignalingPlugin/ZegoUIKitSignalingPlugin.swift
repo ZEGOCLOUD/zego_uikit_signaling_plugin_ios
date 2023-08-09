@@ -104,6 +104,10 @@ public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
         service.sendRoomMessage(text, roomID: roomID, callback: callback)
     }
     
+    public func sendRoomCommand(_ command: String, roomID: String, callback: SendRoomMessageCallback?) {
+        service.sendRoomCommand(command, roomID: roomID, callback: callback)
+    }
+    
     public func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool,
                                                              isSandboxEnvironment: Bool) {
         service.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
