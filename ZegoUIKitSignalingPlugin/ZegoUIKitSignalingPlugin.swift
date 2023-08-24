@@ -109,8 +109,9 @@ public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
     }
     
     public func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool,
-                                                             isSandboxEnvironment: Bool) {
-        service.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment)
+                                                      isSandboxEnvironment: Bool,
+                                                      certificateIndex: ZegoSignalingPluginMultiCertificate = .firstCertificate) {
+        service.enableNotifyWhenAppRunningInBackgroundOrQuit(enable, isSandboxEnvironment: isSandboxEnvironment, certificateIndex: certificateIndex)
     }
     
     public func setRemoteNotificationsDeviceToken(_ deviceToken: Data) {

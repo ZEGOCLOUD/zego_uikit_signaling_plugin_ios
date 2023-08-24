@@ -111,7 +111,8 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
     }
     
     public func enableNotifyWhenAppRunningInBackgroundOrQuit(_ enable: Bool,
-                                                             isSandboxEnvironment: Bool) {
+                                                             isSandboxEnvironment: Bool,
+                                                             certificateIndex: ZegoSignalingPluginMultiCertificate) {
         self.notifyWhenAppRunningInBackgroundOrQuit = enable
         self.isSandboxEnvironment = isSandboxEnvironment
         if enable == true {
@@ -119,6 +120,9 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
             center.requestAuthorization(options: [.alert,.badge,.sound,.criticalAlert]) { (granted: Bool, error: Error?) in
                   if granted {
                       DispatchQueue.main.sync {
+                          let config = ZPNsConfig()
+                          config.appType = certificateIndex.rawValue
+                          ZPNs.shared().setPush(config)
                           ZPNs.shared().registerAPNs()
                           ZPNs.shared().setZPNsNotificationCenterDelegate(self)
                           UIApplication.shared.registerForRemoteNotifications()
