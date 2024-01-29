@@ -79,7 +79,7 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         zim?.callInvite(with: invitees, config: config, callback: { callID, info, error in
             let code = error.code.rawValue
             let message = error.message
-            let errorInvitees = info.errorInvitees.compactMap({ $0.userID })
+            let errorInvitees = info.errorUserList.compactMap({ $0.userID })
             callback?(code, message, callID, errorInvitees)
         })
     }
@@ -129,6 +129,8 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
                       }
                   }
             }
+            CallKitManager.shared.delegate = self
+            CallKitManager.shared.enableVoIP(isSandboxEnvironment)
         }
     }
         

@@ -127,4 +127,20 @@ public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
         service.registerZIMEventHandler(handler)
     }
     
+    // MARK: CallKit
+    public func reportIncomingCall(with uuid: UUID, title: String, hasVideo: Bool) {
+        service.reportIncomingCall(with: uuid, title: title, hasVideo: hasVideo)
+    }
+    
+    public func reportCallEnded(with uuid: UUID, reason: Int) {
+        service.reportCallEnded(with: uuid, reason: reason)
+    }
+    
+    public func endCall(with uuid: UUID) {
+        service.endCall(with: uuid)
+    }
+    
+    public func endAllCalls() {
+        service.endAllCalls()
+    }
 }
