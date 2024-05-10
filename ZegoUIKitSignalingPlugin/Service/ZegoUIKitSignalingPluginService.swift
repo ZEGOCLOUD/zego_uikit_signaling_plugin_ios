@@ -38,6 +38,10 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         self.zim?.setEventHandler(self)
     }
     
+    public func setVoipToken(_ token: Data, isSandboxEnvironment: Bool) {
+        ZPNs.shared().setVoipToken(token, isProduct: !isSandboxEnvironment)
+    }
+    
     public func connectUser(userID: String, userName: String, token: String?, callback: ConnectUserCallback?) {
         let user = ZIMUserInfo()
         user.userID = userID
@@ -129,8 +133,8 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
                       }
                   }
             }
-            CallKitManager.shared.delegate = self
-            CallKitManager.shared.enableVoIP(isSandboxEnvironment)
+//            CallKitManager.shared.delegate = self
+//            CallKitManager.shared.enableVoIP(isSandboxEnvironment)
         }
     }
         

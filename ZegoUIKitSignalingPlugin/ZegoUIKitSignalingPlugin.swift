@@ -10,7 +10,7 @@ import ZegoPluginAdapter
 import ZIM
 
 public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
-    
+
     
     public static let shared = ZegoUIKitSignalingPlugin()
     
@@ -28,6 +28,11 @@ public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
     public var version: String {
         "1.0.0"
     }
+    
+    public func setVoipToken(_ token: Data, isSandboxEnvironment: Bool) {
+        service.setVoipToken(token, isSandboxEnvironment: isSandboxEnvironment)
+    }
+    
     
     
     public func initWith(appID: UInt32, appSign: String?) {
@@ -127,20 +132,5 @@ public class ZegoUIKitSignalingPlugin: ZegoSignalingPluginProtocol {
         service.registerZIMEventHandler(handler)
     }
     
-    // MARK: CallKit
-    public func reportIncomingCall(with uuid: UUID, title: String, hasVideo: Bool) {
-        service.reportIncomingCall(with: uuid, title: title, hasVideo: hasVideo)
-    }
     
-    public func reportCallEnded(with uuid: UUID, reason: Int) {
-        service.reportCallEnded(with: uuid, reason: reason)
-    }
-    
-    public func endCall(with uuid: UUID) {
-        service.endCall(with: uuid)
-    }
-    
-    public func endAllCalls() {
-        service.endAllCalls()
-    }
 }
