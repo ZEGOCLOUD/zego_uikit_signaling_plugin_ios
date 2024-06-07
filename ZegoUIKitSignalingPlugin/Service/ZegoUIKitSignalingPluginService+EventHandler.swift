@@ -131,6 +131,10 @@ extension ZegoUIKitSignalingPluginService: ZIMEventHandler {
         for handler in zimEventHandlers.allObjects {
             handler.zim?(zim, roomStateChanged: state, event: event, extendedData: extendedData, roomID: roomID)
         }
+      
+        for handler in pluginEventHandlers.allObjects {
+          handler.onIMRoomStateChanged(Int(state.rawValue), event: Int(event.rawValue), roomID: roomID)
+        }
     }
     
     // MARK: - Invitation
