@@ -50,7 +50,7 @@ class ZegoUIKitSignalingPluginService: NSObject, ZPNsNotificationCenterDelegate 
         zim?.login(with: user, token: token ?? "") { error in
             var code = error.code.rawValue
             var message = error.message
-            if error.code == .networkModuleUserHasAlreadyLogged {
+            if error.code == .ZIMErrorCodeNetworkModuleUserHasAlreadyLogged {
                 code = 0
                 message = ""
             }
