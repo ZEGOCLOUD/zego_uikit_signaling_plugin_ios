@@ -310,5 +310,11 @@ extension ZegoUIKitSignalingPluginService: ZIMEventHandler {
             handler.zim?(zim, groupMemberInfoUpdated: userInfo, operatedInfo: operatedInfo, groupID: groupID)
         }
     }
+  
+    func zim(_ zim: ZIM, messageReactionsChanged reactions: [ZIMMessageReaction]) {
+      for handler in zimEventHandlers.allObjects {
+        handler.zim?(zim,messageReactionsChanged: reactions)
+      }
+    }
     
 }
